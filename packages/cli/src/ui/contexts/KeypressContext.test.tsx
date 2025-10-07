@@ -20,7 +20,7 @@ import {
   DOUBLE_QUOTE,
 } from './KeypressContext.js';
 import { useStdin } from 'ink';
-import { EventEmitter } from 'node:events';
+import { PassThrough } from 'node:stream';
 
 // Mock the 'ink' module to control stdin
 vi.mock('ink', async (importOriginal) => {
@@ -31,14 +31,9 @@ vi.mock('ink', async (importOriginal) => {
   };
 });
 
-class MockStdin extends EventEmitter {
+class MockStdin extends PassThrough {
   isTTY = true;
   setRawMode = vi.fn();
-  override on = this.addListener;
-  override removeListener = super.removeListener;
-  write = vi.fn();
-  resume = vi.fn();
-  pause = vi.fn();
 
   // Helper to simulate a keypress event
   pressKey(key: Partial<Key>) {
@@ -47,16 +42,16 @@ class MockStdin extends EventEmitter {
 
   // Helper to simulate a kitty protocol sequence
   sendKittySequence(sequence: string) {
-    this.emit('data', Buffer.from(sequence));
+    this.write(sequence);
   }
 
   // Helper to simulate a paste event
   sendPaste(text: string) {
     const PASTE_MODE_PREFIX = `\x1b[200~`;
     const PASTE_MODE_SUFFIX = `\x1b[201~`;
-    this.emit('data', Buffer.from(PASTE_MODE_PREFIX));
-    this.emit('data', Buffer.from(text));
-    this.emit('data', Buffer.from(PASTE_MODE_SUFFIX));
+    this.write(PASTE_MODE_PREFIX);
+    this.write(text);
+    this.write(PASTE_MODE_SUFFIX);
   }
 }
 
