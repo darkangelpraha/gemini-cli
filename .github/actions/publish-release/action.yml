@@ -59,6 +59,7 @@ runs:
       with:
         branch-name: '${{ inputs.branch-name }}'
         is-release-dry-run: '${{ inputs.dry-run }}'
+        github-token: '${{ inputs.github-token }}'
 
     - name: 'Configure npm for publishing'
       uses: 'actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020'

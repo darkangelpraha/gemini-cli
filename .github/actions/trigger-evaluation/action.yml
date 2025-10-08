@@ -8,13 +8,16 @@ inputs:
   is-release-dry-run:
     description: 'Whether the parent release workflow is a dry-run.'
     required: true
+  github-token:
+    description: 'The GitHub token for triggering the workflow.'
+    required: true
 
 runs:
   using: 'composite'
   steps:
     - name: 'Trigger Evaluation'
       env:
-        GH_TOKEN: ${{ github.token }}
+        GH_TOKEN: ${{ inputs.github-token }}
       shell: 'bash'
       run: |
         # For the eval workflow, `dry-run` means "don't create an issue on failure".
