@@ -54,6 +54,12 @@ inputs:
 runs:
   using: 'composite'
   steps:
+    - name: 'Trigger Evaluation'
+      uses: './.github/actions/trigger-evaluation'
+      with:
+        branch-name: '${{ inputs.branch-name }}'
+        is-release-dry-run: '${{ inputs.dry-run }}'
+
     - name: 'Configure npm for publishing'
       uses: 'actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020'
       with:
