@@ -5,8 +5,7 @@
  */
 
 import React from 'react';
-import { render } from 'ink';
-import { AppContainer } from './ui/AppContainer.js';
+import { render, Text } from 'ink';
 import { loadCliConfig, parseArguments } from './config/config.js';
 import * as cliConfig from './config/config.js';
 import { readStdin } from './utils/readStdin.js';
@@ -58,8 +57,6 @@ import { SettingsContext } from './ui/contexts/SettingsContext.js';
 
 import { SessionStatsProvider } from './ui/contexts/SessionContext.js';
 import { VimModeProvider } from './ui/contexts/VimModeContext.js';
-import { KeypressProvider } from './ui/contexts/KeypressContext.js';
-import { useKittyKeyboardProtocol } from './ui/hooks/useKittyKeyboardProtocol.js';
 import {
   relaunchAppInChildProcess,
   relaunchOnExitCode,
@@ -142,36 +139,21 @@ export async function startInteractiveUI(
   settings: LoadedSettings,
   startupWarnings: string[],
   workspaceRoot: string = process.cwd(),
-  initializationResult: InitializationResult,
+  _: InitializationResult,
 ) {
-  const version = await getCliVersion();
+  await getCliVersion();
   setWindowTitle(basename(workspaceRoot), settings);
 
   // Create wrapper component to use hooks inside render
-  const AppWrapper = () => {
-    const kittyProtocolStatus = useKittyKeyboardProtocol();
-    return (
-      <SettingsContext.Provider value={settings}>
-        <KeypressProvider
-          kittyProtocolEnabled={kittyProtocolStatus.enabled}
-          config={config}
-          debugKeystrokeLogging={settings.merged.general?.debugKeystrokeLogging}
-        >
-          <SessionStatsProvider>
-            <VimModeProvider settings={settings}>
-              <AppContainer
-                config={config}
-                settings={settings}
-                startupWarnings={startupWarnings}
-                version={version}
-                initializationResult={initializationResult}
-              />
-            </VimModeProvider>
-          </SessionStatsProvider>
-        </KeypressProvider>
-      </SettingsContext.Provider>
-    );
-  };
+  const AppWrapper = () => (
+    <SettingsContext.Provider value={settings}>
+      <SessionStatsProvider>
+        <VimModeProvider settings={settings}>
+          <Text>Love of my life</Text>
+        </VimModeProvider>
+      </SessionStatsProvider>
+    </SettingsContext.Provider>
+  );
 
   const instance = render(
     process.env['DEBUG'] ? (
@@ -365,18 +347,6 @@ export async function main() {
     const wasRaw = process.stdin.isRaw;
     let kittyProtocolDetectionComplete: Promise<boolean> | undefined;
     if (config.isInteractive() && !wasRaw && process.stdin.isTTY) {
-      // Set this as early as possible to avoid spurious characters from
-      // input showing up in the output.
-      process.stdin.setRawMode(true);
-
-      // This cleanup isn't strictly needed but may help in certain situations.
-      process.on('SIGTERM', () => {
-        process.stdin.setRawMode(wasRaw);
-      });
-      process.on('SIGINT', () => {
-        process.stdin.setRawMode(wasRaw);
-      });
-
       // Detect and enable Kitty keyboard protocol once at startup.
       kittyProtocolDetectionComplete = detectAndEnableKittyProtocol();
     }

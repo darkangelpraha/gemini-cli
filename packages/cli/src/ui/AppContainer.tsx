@@ -81,7 +81,7 @@ import { type IdeIntegrationNudgeResult } from './IdeIntegrationNudge.js';
 import { appEvents, AppEvent } from '../utils/events.js';
 import { type UpdateObject } from './utils/updateCheck.js';
 import { setUpdateHandler } from '../utils/handleAutoUpdate.js';
-import { ConsolePatcher } from './utils/ConsolePatcher.js';
+// import { ConsolePatcher } from './utils/ConsolePatcher.js';
 import { registerCleanup, runExitCleanup } from '../utils/cleanup.js';
 import { useMessageQueue } from './hooks/useMessageQueue.js';
 import { useAutoAcceptIndicator } from './hooks/useAutoAcceptIndicator.js';
@@ -90,6 +90,7 @@ import { useSessionStats } from './contexts/SessionContext.js';
 import { useGitBranchName } from './hooks/useGitBranchName.js';
 import { useExtensionUpdates } from './hooks/useExtensionUpdates.js';
 import { ShellFocusContext } from './contexts/ShellFocusContext.js';
+import { useWhyDidYouUpdate } from './hooks/useWhyDidYouUpdate.js';
 
 const CTRL_EXIT_PROMPT_DURATION_MS = 1000;
 
@@ -125,6 +126,7 @@ const SHELL_WIDTH_FRACTION = 0.89;
 const SHELL_HEIGHT_PADDING = 10;
 
 export const AppContainer = (props: AppContainerProps) => {
+  console.debug('top of AppContainer: richie');
   const { settings, config, initializationResult } = props;
   const historyManager = useHistory();
   useMemoryMonitor(historyManager);
@@ -209,8 +211,11 @@ export const AppContainer = (props: AppContainerProps) => {
   const lastTitleRef = useRef<string | null>(null);
   const staticExtraHeight = 3;
 
+  console.debug('Before useEffect...');
   useEffect(() => {
+    console.debug('inside useEffect...');
     (async () => {
+      console.debug('inside inside useEffect...');
       // Note: the program will not work if this fails so let errors be
       // handled by the global catch.
       await config.initialize();
@@ -248,14 +253,14 @@ export const AppContainer = (props: AppContainerProps) => {
     clearConsoleMessages: clearConsoleMessagesState,
   } = useConsoleMessages();
 
-  useEffect(() => {
-    const consolePatcher = new ConsolePatcher({
-      onNewMessage: handleNewMessage,
-      debugMode: config.getDebugMode(),
-    });
-    consolePatcher.patch();
-    registerCleanup(consolePatcher.cleanup);
-  }, [handleNewMessage, config]);
+  // useEffect(() => {
+  //   const consolePatcher = new ConsolePatcher({
+  //     onNewMessage: handleNewMessage,
+  //     debugMode: config.getDebugMode(),
+  //   });
+  //   consolePatcher.patch();
+  //   registerCleanup(consolePatcher.cleanup);
+  // }, [handleNewMessage, config]);
 
   // Derive widths for InputPrompt using shared helper
   const { inputWidth, suggestionsWidth } = useMemo(() => {
@@ -1229,6 +1234,11 @@ Logging in with Google... Please restart Gemini CLI to continue.
     ],
   );
 
+  const exitPrivacyNotice = useCallback(
+    () => setShowPrivacyNotice(false),
+    [setShowPrivacyNotice],
+  );
+
   const uiActions: UIActions = useMemo(
     () => ({
       handleThemeSelect,
@@ -1238,7 +1248,7 @@ Logging in with Google... Please restart Gemini CLI to continue.
       onAuthError,
       handleEditorSelect,
       exitEditorDialog,
-      exitPrivacyNotice: () => setShowPrivacyNotice(false),
+      exitPrivacyNotice,
       closeSettingsDialog,
       closeModelDialog,
       closePermissionsDialog,
@@ -1263,6 +1273,7 @@ Logging in with Google... Please restart Gemini CLI to continue.
       onAuthError,
       handleEditorSelect,
       exitEditorDialog,
+      exitPrivacyNotice,
       closeSettingsDialog,
       closeModelDialog,
       closePermissionsDialog,
@@ -1280,6 +1291,8 @@ Logging in with Google... Please restart Gemini CLI to continue.
       handleProQuotaChoice,
     ],
   );
+
+  useWhyDidYouUpdate('AppContainer', { ...props, ...uiState, ...uiActions });
 
   return (
     <UIStateContext.Provider value={uiState}>

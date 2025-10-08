@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import {
   type Extension,
   getWorkspaceExtensions,
@@ -39,7 +39,7 @@ export function useWorkspaceMigration(settings: LoadedSettings) {
     settings.merged.experimental?.extensionManagement,
   ]);
 
-  const onWorkspaceMigrationDialogOpen = () => {
+  const onWorkspaceMigrationDialogOpen = useCallback(() => {
     const userSettings = settings.forScope(SettingScope.User);
     const extensionSettings = userSettings.settings.extensions || {
       disabled: [],
@@ -55,16 +55,24 @@ export function useWorkspaceMigration(settings: LoadedSettings) {
     extensionSettings.workspacesWithMigrationNudge =
       workspacesWithMigrationNudge;
     settings.setValue(SettingScope.User, 'extensions', extensionSettings);
-  };
+  }, [settings]);
 
-  const onWorkspaceMigrationDialogClose = () => {
+  const onWorkspaceMigrationDialogClose = useCallback(() => {
     setShowWorkspaceMigrationDialog(false);
-  };
+  }, [setShowWorkspaceMigrationDialog]);
 
-  return {
-    showWorkspaceMigrationDialog,
-    workspaceExtensions,
-    onWorkspaceMigrationDialogOpen,
-    onWorkspaceMigrationDialogClose,
-  };
+  return useMemo(
+    () => ({
+      showWorkspaceMigrationDialog,
+      workspaceExtensions,
+      onWorkspaceMigrationDialogOpen,
+      onWorkspaceMigrationDialogClose,
+    }),
+    [
+      showWorkspaceMigrationDialog,
+      workspaceExtensions,
+      onWorkspaceMigrationDialogOpen,
+      onWorkspaceMigrationDialogClose,
+    ],
+  );
 }

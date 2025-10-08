@@ -182,8 +182,16 @@ export class TestRig {
         otlpEndpoint: '',
         outfile: telemetryPath,
       },
+      security: {
+        auth: {
+          selectedType: 'gemini-api-key',
+        },
+      },
       model: DEFAULT_GEMINI_MODEL,
       sandbox: env.GEMINI_SANDBOX !== 'false' ? env.GEMINI_SANDBOX : false,
+      general: {
+        disableAutoUpdate: true,
+      },
       ...options.settings, // Allow tests to override/add settings
     };
     writeFileSync(
@@ -219,6 +227,9 @@ export class TestRig {
     const isNpmReleaseTest =
       process.env.INTEGRATION_TEST_USE_INSTALLED_GEMINI === 'true';
     const command = isNpmReleaseTest ? 'gemini' : 'node';
+
+    console.debug('isNpmReleaseTest:', isNpmReleaseTest, 'command:', command);
+
     const initialArgs = isNpmReleaseTest
       ? extraInitialArgs
       : [this.bundlePath, ...extraInitialArgs];
@@ -282,14 +293,14 @@ export class TestRig {
     child.stdout!.on('data', (data: Buffer) => {
       stdout += data;
       if (env.KEEP_OUTPUT === 'true' || env.VERBOSE === 'true') {
-        process.stdout.write(data);
+        // process.stdout.write(data);
       }
     });
 
     child.stderr!.on('data', (data: Buffer) => {
       stderr += data;
       if (env.KEEP_OUTPUT === 'true' || env.VERBOSE === 'true') {
-        process.stderr.write(data);
+        // process.stderr.write(data);
       }
     });
 
@@ -381,14 +392,14 @@ export class TestRig {
     child.stdout!.on('data', (data: Buffer) => {
       stdout += data;
       if (env.KEEP_OUTPUT === 'true' || env.VERBOSE === 'true') {
-        process.stdout.write(data);
+        // process.stdout.write(data);
       }
     });
 
     child.stderr!.on('data', (data: Buffer) => {
       stderr += data;
       if (env.KEEP_OUTPUT === 'true' || env.VERBOSE === 'true') {
-        process.stderr.write(data);
+        // process.stderr.write(data);
       }
     });
 
@@ -838,9 +849,6 @@ export class TestRig {
 
     ptyProcess.onData((data) => {
       this._interactiveOutput += data;
-      if (env.KEEP_OUTPUT === 'true' || env.VERBOSE === 'true') {
-        process.stdout.write(data);
-      }
     });
 
     const promise = new Promise<{
