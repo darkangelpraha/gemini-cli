@@ -464,12 +464,10 @@ describe('gemini.tsx main function kitty protocol', () => {
   });
 
   it('should call setRawMode and detectAndEnableKittyProtocol when isInteractive is true', async () => {
-    const { detectAndEnableKittyProtocol } = await import(
-      './ui/utils/kittyProtocolDetector.js'
-    );
-    const { loadCliConfig, parseArguments } = await import(
-      './config/config.js'
-    );
+    const { detectAndEnableKittyProtocol } =
+      await import('./ui/utils/kittyProtocolDetector.js');
+    const { loadCliConfig, parseArguments } =
+      await import('./config/config.js');
     const { loadSettings } = await import('./config/settings.js');
     vi.mocked(loadCliConfig).mockResolvedValue({
       isInteractive: () => true,
@@ -552,9 +550,8 @@ describe('gemini.tsx main function kitty protocol', () => {
     { flag: 'listSessions' },
     { flag: 'deleteSession', value: 'session-id' },
   ])('should handle --$flag flag', async ({ flag, value }) => {
-    const { loadCliConfig, parseArguments } = await import(
-      './config/config.js'
-    );
+    const { loadCliConfig, parseArguments } =
+      await import('./config/config.js');
     const { loadSettings } = await import('./config/settings.js');
     const { listSessions, deleteSession } = await import('./utils/sessions.js');
     const processExitSpy = vi
@@ -630,9 +627,8 @@ describe('gemini.tsx main function kitty protocol', () => {
   });
 
   it('should handle sandbox activation', async () => {
-    const { loadCliConfig, parseArguments } = await import(
-      './config/config.js'
-    );
+    const { loadCliConfig, parseArguments } =
+      await import('./config/config.js');
     const { loadSandboxConfig } = await import('./config/sandboxConfig.js');
     const { start_sandbox } = await import('./utils/sandbox.js');
     const { relaunchOnExitCode } = await import('./utils/relaunch.js');
@@ -699,9 +695,8 @@ describe('gemini.tsx main function kitty protocol', () => {
   });
 
   it('should exit with error when --prompt-interactive is used with piped input', async () => {
-    const { loadCliConfig, parseArguments } = await import(
-      './config/config.js'
-    );
+    const { loadCliConfig, parseArguments } =
+      await import('./config/config.js');
     const { loadSettings } = await import('./config/settings.js');
     const core = await import('@google/gemini-cli-core');
     const processExitSpy = vi
@@ -757,9 +752,8 @@ describe('gemini.tsx main function kitty protocol', () => {
   });
 
   it('should log warning when theme is not found', async () => {
-    const { loadCliConfig, parseArguments } = await import(
-      './config/config.js'
-    );
+    const { loadCliConfig, parseArguments } =
+      await import('./config/config.js');
     const { loadSettings } = await import('./config/settings.js');
     const { themeManager } = await import('./ui/themes/theme-manager.js');
     const debugLoggerWarnSpy = vi
@@ -832,9 +826,8 @@ describe('gemini.tsx main function kitty protocol', () => {
   });
 
   it('should handle session selector error', async () => {
-    const { loadCliConfig, parseArguments } = await import(
-      './config/config.js'
-    );
+    const { loadCliConfig, parseArguments } =
+      await import('./config/config.js');
     const { loadSettings } = await import('./config/settings.js');
     vi.mock('./utils/sessionUtils.js', () => ({
       SessionSelector: class {
@@ -911,13 +904,11 @@ describe('gemini.tsx main function kitty protocol', () => {
   });
 
   it.skip('should log error when cleanupExpiredSessions fails', async () => {
-    const { loadCliConfig, parseArguments } = await import(
-      './config/config.js'
-    );
+    const { loadCliConfig, parseArguments } =
+      await import('./config/config.js');
     const { loadSettings } = await import('./config/settings.js');
-    const { cleanupExpiredSessions } = await import(
-      './utils/sessionCleanup.js'
-    );
+    const { cleanupExpiredSessions } =
+      await import('./utils/sessionCleanup.js');
     vi.mocked(cleanupExpiredSessions).mockRejectedValue(
       new Error('Cleanup failed'),
     );
@@ -990,9 +981,8 @@ describe('gemini.tsx main function kitty protocol', () => {
   });
 
   it('should handle refreshAuth failure', async () => {
-    const { loadCliConfig, parseArguments } = await import(
-      './config/config.js'
-    );
+    const { loadCliConfig, parseArguments } =
+      await import('./config/config.js');
     const { loadSettings } = await import('./config/settings.js');
     const { loadSandboxConfig } = await import('./config/sandboxConfig.js');
     const processExitSpy = vi
@@ -1067,9 +1057,8 @@ describe('gemini.tsx main function kitty protocol', () => {
   });
 
   it('should read from stdin in non-interactive mode', async () => {
-    const { loadCliConfig, parseArguments } = await import(
-      './config/config.js'
-    );
+    const { loadCliConfig, parseArguments } =
+      await import('./config/config.js');
     const { loadSettings } = await import('./config/settings.js');
     const { readStdin } = await import('./utils/readStdin.js');
     const processExitSpy = vi
