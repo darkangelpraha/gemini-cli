@@ -4,7 +4,6 @@
   "main": "index.js",
   "scripts": {},
   "devDependencies": {
-    "@vitest/eslint-plugin": "^1.1.7",
-    "other-dependency": "^1.0.0"
+    "@vitest/eslint-plugin": "^1.1.7"
   }
 }
